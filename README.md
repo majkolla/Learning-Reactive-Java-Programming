@@ -15,4 +15,5 @@ Now we subscribe to the dta stream in our application. This means that the code 
 
 - Processing: 
 Update happen, process it and update the UI to display the latest price 
- 
+
+# Simple Projects to learn

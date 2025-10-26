@@ -1,0 +1,18 @@
+FROM eclipse-temurin:21-jdk AS build
+
+#set workdir
+WORKDIR /app
+
+# copy to that workdir
+COPY Time_stream.java /app/Time_stream.java
+
+#compile
+RUN javac Time_stream.java
+
+FROM eclipse-temurin:21-jre
+
+WORKDIR /app
+
+COPY --from=build /app/SimpleTimer.class /app/SimpleTimer.class
+
+CMD ["java", "SimpleTimer"]
