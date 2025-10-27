@@ -1,18 +1,36 @@
 FROM eclipse-temurin:21-jdk AS build
 
 #set workdir
+FROM maven:3.9.9-eclipse-temurin-21 AS build
+
 WORKDIR /app
 
-# copy to that workdir
-COPY Time_stream.java /app/Time_stream.java
+# Create a temp pom file for the depedencies
+RUN echo '<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"> \
+  <modelVersion>4.0.0</modelVersion> \
+  <groupId>demo</groupId><artifactId>demo</artifactId><version>1.0</version> \
+  <dependencies> \
+    <dependency> \
+      <groupId>io.projectreactor</groupId> \
+      <artifactId>reactor-core</artifactId> \
+      <version>3.6.8</version> \
+    </dependency> \
+  </dependencies> \
+</project>' > pom.xml
 
-#compile
-RUN javac Time_stream.java
+COPY TimeStream.java .
+
+RUN mvn dependency:copy-dependencies \
+ && javac -cp "target/dependency/*" TimeStream.java
+
 
 FROM eclipse-temurin:21-jre
 
 WORKDIR /app
 
-COPY --from=build /app/SimpleTimer.class /app/SimpleTimer.class
 
-CMD ["java", "SimpleTimer"]
+COPY --from=build /app/TimeStream.class .
+COPY --from=build /app/target/dependency ./dependency
+
+# Run
+CMD ["java", "-cp", ".:dependency/*", "TimeStream"]
