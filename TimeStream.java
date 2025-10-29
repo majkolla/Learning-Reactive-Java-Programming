@@ -7,10 +7,8 @@ public class TimeStream {
     public static void main(String[] args) throws InterruptedException {
         // stream that emits one number every second
         Flux.interval(Duration.ofSeconds(1))
-            .map(tick -> LocalTime.now())
-            .subscribe(time -> System.out.println(time));
-
-
+           .map(tick -> LocalTime.now())
+           .subscribe(time -> System.out.println(time));
         Thread.sleep(60_000);
     }    
 }

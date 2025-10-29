@@ -1,36 +1,20 @@
-FROM eclipse-temurin:21-jdk AS build
+FROM ubuntu:20.04
 
-#set workdir
-FROM maven:3.9.9-eclipse-temurin-21 AS build
+ENV DEBIAN_FRONTEND=noninteractive
 
-WORKDIR /app
-
-# Create a temp pom file for the depedencies
-RUN echo '<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"> \
-  <modelVersion>4.0.0</modelVersion> \
-  <groupId>demo</groupId><artifactId>demo</artifactId><version>1.0</version> \
-  <dependencies> \
-    <dependency> \
-      <groupId>io.projectreactor</groupId> \
-      <artifactId>reactor-core</artifactId> \
-      <version>3.6.8</version> \
-    </dependency> \
-  </dependencies> \
-</project>' > pom.xml
-
-COPY TimeStream.java .
-
-RUN mvn dependency:copy-dependencies \
- && javac -cp "target/dependency/*" TimeStream.java
-
-
-FROM eclipse-temurin:21-jre
+RUN apt update && \
+    apt install -y curl ca-certificates openjdk-21-jdk && \
+    rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
+RUN curl -L -o /app/reactor-core.jar \
+    https://repo1.maven.org/maven2/io/projectreactor/reactor-core/3.6.6/reactor-core-3.6.6.jar && \
+    curl -L -o /app/reactive-streams.jar \
+    https://repo1.maven.org/maven2/org/reactivestreams/reactive-streams/1.0.4/reactive-streams-1.0.4.jar
 
-COPY --from=build /app/TimeStream.class .
-COPY --from=build /app/target/dependency ./dependency
+COPY TimeStream.java /app/TimeStream.java
 
-# Run
-CMD ["java", "-cp", ".:dependency/*", "TimeStream"]
+RUN javac -cp reactor-core.jar:reactive-streams.jar TimeStream.java
+
+CMD ["sh", "-lc", "java -cp .:reactor-core.jar:reactive-streams.jar TimeStream"]
