@@ -13,8 +13,8 @@ RUN curl -L -o /app/reactor-core.jar \
     curl -L -o /app/reactive-streams.jar \
     https://repo1.maven.org/maven2/org/reactivestreams/reactive-streams/1.0.4/reactive-streams-1.0.4.jar
 
-COPY TimeStream.java /app/TimeStream.java
+COPY Weather.java /app/Weather.java
 
-RUN javac -cp reactor-core.jar:reactive-streams.jar TimeStream.java
+RUN javac -cp reactor-core.jar:reactive-streams.jar Weather.java
 
-CMD ["sh", "-lc", "java -cp .:reactor-core.jar:reactive-streams.jar TimeStream"]
+CMD ["sh", "-lc", "java -cp .:reactor-core.jar:reactive-streams.jar Weather"]

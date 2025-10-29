@@ -46,5 +46,4 @@ public class Weather {
     
     Thread.sleep(60_000);
     }
-
 }
