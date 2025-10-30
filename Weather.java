@@ -28,7 +28,7 @@ public class Weather {
                 .GET()
                 .build(); 
 
-            HttpResponse<String> response = client.send(request, HttpRequest.BodyHandler.ofString()); 
+            HttpResponse<String> response = client.send(request, HttpRequest.BodyHandlers.ofString()); 
     // We ret the response body, and that becomes the next item in the stream.
         return response.body();    
         
