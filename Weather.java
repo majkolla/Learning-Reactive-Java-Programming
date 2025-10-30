@@ -19,7 +19,7 @@ public class Weather {
 
         Flux.interval(Duration.ofSeconds(1))
         // create an infinte stream 
-        .flatmap(tick -> Flux.fromCallable(() -> {
+        .flatMap(tick -> Flux.fromCallable(() -> {
             // this part will run once every tick 
             // so here we do the http request 
             String url = "http://api.weatherapi.com/v1"; 
