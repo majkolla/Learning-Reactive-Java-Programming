@@ -6,6 +6,7 @@ import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandler;
 import java.time.Duration;
 
+import reactor.core.publisher.Mono; 
 import reactor.core.publisher.Flux;
 import reactor.core.scheduler.Schedulers;
 
@@ -19,7 +20,7 @@ public class Weather {
 
         Flux.interval(Duration.ofSeconds(1))
         // create an infinte stream 
-        .flatMap(tick -> Flux.fromCallable(() -> {
+        .flatMap(tick -> Mono.fromCallable(() -> {
             // this part will run once every tick 
             // so here we do the http request 
             String url = "http://api.weatherapi.com/v1"; 
@@ -28,10 +29,9 @@ public class Weather {
                 .GET()
                 .build(); 
 
-            HttpResponse<String> response = client.send(request, HttpRequest.BodyHandlers.ofString()); 
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString()); 
     // We ret the response body, and that becomes the next item in the stream.
         return response.body();    
-        
     })
     // tell the reactor: run this on a thread so we don't block the main reactive thread
 
@@ -44,6 +44,6 @@ public class Weather {
         } 
     );
     
-    Thread.sleep(60_000);
+    try { Thread.sleep(60_000); } catch (InterruptedException ignored) {}
     }
 }

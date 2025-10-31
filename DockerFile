@@ -15,6 +15,6 @@ RUN curl -L -o /app/reactor-core.jar \
 
 COPY Weather.java /app/Weather.java
 
-RUN javac -cp reactor-core.jar:reactive-streams.jar Weather.java
+RUN javac -cp ".:reactor-core.jar:reactive-streams.jar" Weather.java
 
 CMD ["sh", "-lc", "java -cp .:reactor-core.jar:reactive-streams.jar Weather"]
